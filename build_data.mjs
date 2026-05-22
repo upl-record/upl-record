@@ -234,8 +234,9 @@ const ELO_CONFIG = {
   k: 50,
   divisor: 1000,
   center: 1000,
-  edgeMinInitial: 0,
-  edgeMaxInitial: 2000,
+  initialDivisor: 500,
+  edgeMinInitial: 500,
+  edgeMaxInitial: 1500,
   initialWeeks: 4,
 };
 
@@ -273,7 +274,49 @@ function initialRatingFromRecord(wins, losses) {
   if (!wins && !losses) return ELO_CONFIG.center;
   if (!wins) return ELO_CONFIG.edgeMinInitial;
   if (!losses) return ELO_CONFIG.edgeMaxInitial;
-  return roundRating(ELO_CONFIG.center + (ELO_CONFIG.divisor * Math.log10(wins / losses)));
+  return roundRating(ELO_CONFIG.center + (ELO_CONFIG.initialDivisor * Math.log10(wins / losses)));
+}
+
+function playerUnitKeys(matches, player, regularOnly) {
+  return unique(
+    matches
+      .filter((match) => (
+        (!regularOnly || match.week !== null)
+        && (match.player1 === player || match.player2 === player)
+      ))
+      .sort((a, b) => eloUnitOrder(a) - eloUnitOrder(b) || a.id - b.id)
+      .map(eloUnitKey),
+  );
+}
+
+function initialWindowKeys(matches, player) {
+  const regularKeys = playerUnitKeys(matches, player, true);
+  const allKeys = playerUnitKeys(matches, player, false);
+  const baseKeys = regularKeys.length ? regularKeys : allKeys;
+  const windowKeys = baseKeys.slice(0, ELO_CONFIG.initialWeeks);
+  if (!windowKeys.length) return windowKeys;
+
+  const windowSet = new Set(windowKeys);
+  const hasInitialWin = matches.some((match) => (
+    windowSet.has(eloUnitKey(match))
+    && (match.player1 === player || match.player2 === player)
+    && match.winner === player
+  ));
+  if (hasInitialWin) return windowKeys;
+
+  const extensionKeys = regularKeys.length ? allKeys : baseKeys;
+  const firstWin = matches
+    .filter((match) => (
+      extensionKeys.includes(eloUnitKey(match))
+      && (match.player1 === player || match.player2 === player)
+      && match.winner === player
+    ))
+    .sort((a, b) => eloUnitOrder(a) - eloUnitOrder(b) || a.id - b.id)[0];
+  if (!firstWin) return extensionKeys;
+
+  const firstWinKey = eloUnitKey(firstWin);
+  const firstWinIndex = extensionKeys.indexOf(firstWinKey);
+  return extensionKeys.slice(0, firstWinIndex + 1);
 }
 
 function buildEloAnalysis(allMatches, allPlayers) {
@@ -299,21 +342,7 @@ function buildEloAnalysis(allMatches, allPlayers) {
 
   const initial = new Map();
   for (const player of allPlayers) {
-    const regularWeekKeys = unique(
-      allMatches
-        .filter((match) => match.week !== null && (match.player1 === player || match.player2 === player))
-        .sort((a, b) => eloUnitOrder(a) - eloUnitOrder(b) || a.id - b.id)
-        .map(eloUnitKey),
-    ).slice(0, ELO_CONFIG.initialWeeks);
-
-    const fallbackKeys = regularWeekKeys.length ? [] : unique(
-      allMatches
-        .filter((match) => match.player1 === player || match.player2 === player)
-        .sort((a, b) => eloUnitOrder(a) - eloUnitOrder(b) || a.id - b.id)
-        .map(eloUnitKey),
-    ).slice(0, ELO_CONFIG.initialWeeks);
-
-    const windowKeys = regularWeekKeys.length ? regularWeekKeys : fallbackKeys;
+    const windowKeys = initialWindowKeys(allMatches, player);
     const windowSet = new Set(windowKeys);
     const windowMatches = allMatches.filter((match) => (
       windowSet.has(eloUnitKey(match)) && (match.player1 === player || match.player2 === player)
@@ -463,7 +492,7 @@ function buildEloAnalysis(allMatches, allPlayers) {
   return {
     config: {
       ...ELO_CONFIG,
-      initialFormula: '1000 + 1000 * log10(wins / losses)',
+      initialFormula: '1000 + 500 * log10(wins / losses)',
       updateMode: 'weekly simultaneous batch',
     },
     leaderboard,
@@ -621,6 +650,7 @@ const payload = {
       k: elo.config.k,
       divisor: elo.config.divisor,
       center: elo.config.center,
+      initialDivisor: elo.config.initialDivisor,
       initialWeeks: elo.config.initialWeeks,
     },
     note: 'Season2 Week10 adjustments are included only in total player records.',

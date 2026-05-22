@@ -15,6 +15,7 @@ const state = {
   playerB: data.playerSummary[1]?.player || data.players[1],
   eloPlayer: data.elo?.leaderboard[0]?.player || data.playerSummary[0]?.player || data.players[0],
   eloGame: data.games[0] || 'all',
+  gameAnalysisSort: 'elo',
   eloLeaderboardExpanded: false,
   eloGameLeaderboardExpanded: false,
   virtualA: data.elo?.leaderboard[0]?.player || data.players[0],
@@ -121,6 +122,79 @@ function escapeHtml(value) {
     '"': '&quot;',
     "'": '&#039;',
   }[char]));
+}
+
+function adjustmentSeasonShort(adjustment) {
+  return adjustment.season.replace('Season', 'S');
+}
+
+function matchesSeason(match, season = state.season) {
+  return season === 'all' || match.seasonShort === season;
+}
+
+function seasonPlayers(season = state.season) {
+  if (season === 'all') return data.players;
+  const players = new Set();
+  for (const match of data.matches) {
+    if (match.seasonShort !== season) continue;
+    players.add(match.player1);
+    players.add(match.player2);
+  }
+  for (const adjustment of data.adjustments) {
+    if (adjustmentSeasonShort(adjustment) === season) players.add(adjustment.player);
+  }
+  return data.players.filter((player) => players.has(player));
+}
+
+function seasonGames(season = state.season) {
+  if (season === 'all') return data.games;
+  const games = new Set(data.matches.filter((match) => match.seasonShort === season).map((match) => match.game));
+  return data.games.filter((game) => games.has(game));
+}
+
+function seasonTeamNames(season = state.season) {
+  const teams = season === 'all' ? teamRosters : teamRosters.filter((row) => row.season === season);
+  return teams.map((row) => row.key);
+}
+
+function pickAvailable(values, current, fallback = '') {
+  return values.includes(current) ? current : values[0] || fallback;
+}
+
+function pickDifferent(values, current, other) {
+  if (values.includes(current) && current !== other) return current;
+  return values.find((value) => value !== other) || values[0] || current || '';
+}
+
+function filterMemberSlotsForSeason(players, allowedPlayers) {
+  return memberSlots(players.map((player) => (allowedPlayers.includes(player) ? player : '')), 5);
+}
+
+function ensureSeasonSelections() {
+  const players = seasonPlayers();
+  const games = seasonGames();
+  const teams = seasonTeamNames();
+
+  if (state.game !== 'all' && !games.includes(state.game)) state.game = 'all';
+  state.eloGame = pickAvailable(games, state.eloGame, 'all');
+  if (state.virtualGame !== 'all' && !games.includes(state.virtualGame)) state.virtualGame = 'all';
+  if (state.teamGame !== 'all' && !games.includes(state.teamGame)) state.teamGame = 'all';
+
+  state.player = pickAvailable(players, state.player);
+  state.playerA = pickAvailable(players, state.playerA);
+  state.playerB = pickDifferent(players, state.playerB, state.playerA);
+  state.eloPlayer = pickAvailable(players, state.eloPlayer);
+  state.virtualA = pickAvailable(players, state.virtualA);
+  state.virtualB = pickDifferent(players, state.virtualB, state.virtualA);
+
+  const previousTeamA = state.teamPresetA;
+  const previousTeamB = state.teamPresetB;
+  state.teamPresetA = pickAvailable(teams, state.teamPresetA);
+  state.teamPresetB = pickDifferent(teams, state.teamPresetB, state.teamPresetA);
+  if (state.teamPresetA !== previousTeamA) state.teamAPlayers = memberSlots(rosterForTeam(state.teamPresetA), 5);
+  if (state.teamPresetB !== previousTeamB) state.teamBPlayers = memberSlots(rosterForTeam(state.teamPresetB), 5);
+  state.teamAPlayers = filterMemberSlotsForSeason(state.teamAPlayers, players);
+  state.teamBPlayers = filterMemberSlotsForSeason(state.teamBPlayers, players);
 }
 
 function matchesText(match) {
@@ -254,11 +328,7 @@ function expectedWinRate(rating, opponentRating) {
   return 1 / (1 + (10 ** ((opponentRating - rating) / divisor)));
 }
 
-function gameRecord(player, game) {
-  if (game === 'all') {
-    return { games: 0, wins: 0, losses: 0, margin: 0, marginBonus: 0, experienceBonus: 0, bonus: 0 };
-  }
-  const matches = data.matches.filter((match) => match.game === game && (match.player1 === player || match.player2 === player));
+function recordFromMatches(player, matches) {
   const wins = matches.filter((match) => match.winner === player).length;
   const losses = matches.length - wins;
   const margin = wins - losses;
@@ -268,11 +338,24 @@ function gameRecord(player, game) {
     games: matches.length,
     wins,
     losses,
+    winRate: pct(wins, matches.length),
     margin,
     marginBonus,
     experienceBonus,
     bonus: marginBonus + experienceBonus,
   };
+}
+
+function gameRecord(player, game, season = 'all') {
+  if (game === 'all') {
+    return { games: 0, wins: 0, losses: 0, winRate: 0, margin: 0, marginBonus: 0, experienceBonus: 0, bonus: 0 };
+  }
+  const matches = data.matches.filter((match) => (
+    matchesSeason(match, season)
+    && match.game === game
+    && (match.player1 === player || match.player2 === player)
+  ));
+  return recordFromMatches(player, matches);
 }
 
 function playerEloForMatch(match, player) {
@@ -511,6 +594,7 @@ function renderEloView() {
   if (!selected) return;
   state.eloPlayer = selected.player;
   const text = state.text.toLowerCase();
+  const seasonPlayerSet = new Set(seasonPlayers());
   const timelineRows = (data.elo.timeline[selected.player] || []).filter((row) => {
     if (state.season !== 'all' && row.seasonShort !== state.season) return false;
     return true;
@@ -529,7 +613,8 @@ function renderEloView() {
   renderEloChart($('eloChart'), timelineRows);
 
   const leaderboardRows = data.elo.leaderboard.filter((row) => (
-    !text || row.player.toLowerCase().includes(text)
+    seasonPlayerSet.has(row.player)
+    && (!text || row.player.toLowerCase().includes(text))
   ));
   const leaderboardDisplayRows = visibleRows(leaderboardRows, state.eloLeaderboardExpanded);
 
@@ -600,17 +685,61 @@ function renderGameEloView() {
   if (!data.elo) return;
 
   const text = state.text.toLowerCase();
+  const seasonLabel = state.season === 'all' ? '전체 시즌' : state.season;
+  const sortLabels = {
+    elo: 'ELO순',
+    wins: '승리 순',
+    winRate: '승률 순',
+  };
+  const gameMatches = data.matches
+    .filter((match) => (
+      matchesSeason(match)
+      && match.game === state.eloGame
+      && matchesText(match)
+    ))
+    .sort((a, b) => a.id - b.id);
+  const seasonPlayerSet = new Set(seasonPlayers());
   const gameLeaderboardRows = data.elo.leaderboard.map((row) => {
-    const record = gameRecord(row.player, state.eloGame);
+    const record = recordFromMatches(row.player, gameMatches.filter((match) => match.player1 === row.player || match.player2 === row.player));
     return {
       ...row,
       gameRecord: record,
       gameAdjustedRating: row.rating + record.bonus,
     };
-  }).filter((row) => row.gameRecord.games > 0 && (!text || row.player.toLowerCase().includes(text)))
-    .sort((a, b) => b.gameAdjustedRating - a.gameAdjustedRating || b.rating - a.rating || a.player.localeCompare(b.player, 'ko'))
+  }).filter((row) => (
+    seasonPlayerSet.has(row.player)
+    && row.gameRecord.games > 0
+    && (!text || row.player.toLowerCase().includes(text) || gameMatches.some((match) => match.player1 === row.player || match.player2 === row.player))
+  ))
+    .sort((a, b) => {
+      if (state.gameAnalysisSort === 'wins') {
+        return b.gameRecord.wins - a.gameRecord.wins
+          || b.gameRecord.games - a.gameRecord.games
+          || b.gameAdjustedRating - a.gameAdjustedRating
+          || a.player.localeCompare(b.player, 'ko');
+      }
+      if (state.gameAnalysisSort === 'winRate') {
+        return b.gameRecord.winRate - a.gameRecord.winRate
+          || b.gameRecord.wins - a.gameRecord.wins
+          || b.gameAdjustedRating - a.gameAdjustedRating
+          || a.player.localeCompare(b.player, 'ko');
+      }
+      return b.gameAdjustedRating - a.gameAdjustedRating || b.rating - a.rating || a.player.localeCompare(b.player, 'ko');
+    })
     .map((row, index) => ({ ...row, gameRank: index + 1 }));
   const gameLeaderboardDisplayRows = visibleRows(gameLeaderboardRows, state.eloGameLeaderboardExpanded);
+  const bestBonus = gameLeaderboardRows.length
+    ? Math.max(...gameLeaderboardRows.map((row) => row.gameRecord.bonus))
+    : 0;
+
+  renderMetrics($('gameAnalysisSummary'), [
+    { label: '종목', value: state.eloGame || '-', tone: 'blue' },
+    { label: '시즌', value: seasonLabel },
+    { label: '경기', value: gameMatches.length, tone: 'green' },
+    { label: '참가자', value: gameLeaderboardRows.length, tone: 'blue' },
+    { label: '최고 보정', value: fmtDelta(bestBonus), tone: bestBonus >= 0 ? 'green' : 'amber' },
+    { label: '정렬', value: sortLabels[state.gameAnalysisSort] || sortLabels.elo },
+  ]);
 
   updateToggleButton('eloGameLeaderboardToggle', state.eloGameLeaderboardExpanded, gameLeaderboardRows.length);
   $('eloGameLeaderboardCount').textContent = state.eloGameLeaderboardExpanded
@@ -621,11 +750,22 @@ function renderGameEloView() {
     { label: '플레이어', key: 'player', width: '110px' },
     { label: '현재 ELO', render: (row) => fmtRating(row.rating), className: 'num', width: '100px' },
     { label: '종목 전적', render: (row) => `${row.gameRecord.wins}-${row.gameRecord.losses}`, className: 'num', width: '90px' },
+    { label: '승률', render: (row) => fmtPct(row.gameRecord.winRate), className: 'num', width: '90px' },
     { label: '득실', render: (row) => `<span class="${deltaClass(row.gameRecord.marginBonus)}">${fmtDelta(row.gameRecord.marginBonus)}</span>`, className: 'num', width: '90px' },
     { label: '경험', render: (row) => `<span class="${deltaClass(row.gameRecord.experienceBonus)}">${fmtDelta(row.gameRecord.experienceBonus)}</span>`, className: 'num', width: '90px' },
-    { label: '보정 합계', render: (row) => `<span class="${deltaClass(row.gameRecord.bonus)}">${fmtDelta(row.gameRecord.bonus)}</span>`, className: 'num', width: '100px' },
+    { label: '종목 보정치', render: (row) => `<span class="${deltaClass(row.gameRecord.bonus)}">${fmtDelta(row.gameRecord.bonus)}</span>`, className: 'num', width: '110px' },
     { label: '종목 ELO', render: (row) => fmtRating(row.gameAdjustedRating), className: 'num', width: '110px' },
   ], gameLeaderboardDisplayRows);
+
+  $('gameAnalysisLogCount').textContent = `${gameMatches.length}경기`;
+  renderTable($('gameAnalysisLogTable'), [
+    { label: '시즌', render: (row) => `${row.seasonShort} ${shortPhase(row)}`, width: '90px' },
+    { label: '대진', render: (row) => escapeHtml(`${row.player1} vs ${row.player2}`), width: '150px' },
+    { label: '승자', render: (row) => `<span class="winner">${escapeHtml(row.winner)}</span>`, width: '86px' },
+    { label: '패자', render: (row) => `<span class="loss">${escapeHtml(row.loser)}</span>`, width: '86px' },
+    { label: '팀 매치', render: (row) => escapeHtml([row.team1, row.team2].filter(Boolean).join(' vs ')), width: '210px' },
+    { label: '원문', key: 'rawLine', width: '420px' },
+  ], gameMatches);
 }
 
 function renderVirtualView() {
@@ -636,8 +776,8 @@ function renderVirtualView() {
   const game = state.virtualGame;
   const ratingA = currentRating(a);
   const ratingB = currentRating(b);
-  const gameA = gameRecord(a, game);
-  const gameB = gameRecord(b, game);
+  const gameA = gameRecord(a, game, state.season);
+  const gameB = gameRecord(b, game, state.season);
   const adjustedRatingA = ratingA + gameA.bonus;
   const adjustedRatingB = ratingB + gameB.bonus;
   const expectedA = expectedWinRate(adjustedRatingA, adjustedRatingB);
@@ -699,15 +839,16 @@ function renderVirtualView() {
 }
 
 function appliedRating(player, game) {
-  return currentRating(player) + gameRecord(player, game).bonus;
+  return currentRating(player) + gameRecord(player, game, state.season).bonus;
 }
 
 function renderTeamMembers(target, side, players, size) {
+  const playerOptions = seasonPlayers();
   target.innerHTML = players.slice(0, size).map((player, index) => `
     <label>
       ${index + 1}
       <select data-team-member="${side}" data-index="${index}">
-        <option value=""${player ? '' : ' selected'}>선택</option>${optionList(data.players, player)}
+        <option value=""${player ? '' : ' selected'}>선택</option>${optionList(playerOptions, player)}
       </select>
     </label>
   `).join('');
@@ -840,7 +981,7 @@ function renderTeamVirtualView() {
     ...teamA.map((player) => ({ side: teamALabel, player })),
     ...teamB.map((player) => ({ side: teamBLabel, player })),
   ].map((row) => {
-    const record = gameRecord(row.player, state.teamGame);
+    const record = gameRecord(row.player, state.teamGame, state.season);
     return {
       ...row,
       rating: currentRating(row.player),
@@ -869,22 +1010,28 @@ function render() {
 }
 
 function syncControls() {
-  $('seasonFilter').innerHTML = `<option value="all">전체</option>${optionList(data.meta.seasons, state.season)}`;
-  $('gameFilter').innerHTML = `<option value="all">전체</option>${optionList(data.games, state.game)}`;
+  ensureSeasonSelections();
+  const players = seasonPlayers();
+  const games = seasonGames();
+  const teams = seasonTeamNames();
 
-  const playerOptions = optionList(data.players, state.player);
+  $('seasonFilter').innerHTML = `<option value="all">전체</option>${optionList(data.meta.seasons, state.season)}`;
+  $('gameFilter').innerHTML = `<option value="all">전체</option>${optionList(games, state.game)}`;
+
+  const playerOptions = optionList(players, state.player);
   $('playerSelect').innerHTML = playerOptions;
-  $('playerASelect').innerHTML = optionList(data.players, state.playerA);
-  $('playerBSelect').innerHTML = optionList(data.players, state.playerB);
-  $('eloPlayerSelect').innerHTML = optionList(data.players, state.eloPlayer);
-  $('eloGameSelect').innerHTML = optionList(data.games, state.eloGame);
-  $('virtualASelect').innerHTML = optionList(data.players, state.virtualA);
-  $('virtualBSelect').innerHTML = optionList(data.players, state.virtualB);
-  $('virtualGameSelect').innerHTML = `<option value="all"${state.virtualGame === 'all' ? ' selected' : ''}>종목 미반영</option>${optionList(data.games, state.virtualGame)}`;
+  $('playerASelect').innerHTML = optionList(players, state.playerA);
+  $('playerBSelect').innerHTML = optionList(players, state.playerB);
+  $('eloPlayerSelect').innerHTML = optionList(players, state.eloPlayer);
+  $('eloGameSelect').innerHTML = optionList(games, state.eloGame);
+  $('gameAnalysisSortSelect').value = state.gameAnalysisSort;
+  $('virtualASelect').innerHTML = optionList(players, state.virtualA);
+  $('virtualBSelect').innerHTML = optionList(players, state.virtualB);
+  $('virtualGameSelect').innerHTML = `<option value="all"${state.virtualGame === 'all' ? ' selected' : ''}>종목 미반영</option>${optionList(games, state.virtualGame)}`;
   $('teamSizeSelect').value = String(state.teamSize);
-  $('teamGameSelect').innerHTML = `<option value="all"${state.teamGame === 'all' ? ' selected' : ''}>종목 미반영</option>${optionList(data.games, state.teamGame)}`;
-  $('teamPresetASelect').innerHTML = optionList(teamNames, state.teamPresetA);
-  $('teamPresetBSelect').innerHTML = optionList(teamNames, state.teamPresetB);
+  $('teamGameSelect').innerHTML = `<option value="all"${state.teamGame === 'all' ? ' selected' : ''}>종목 미반영</option>${optionList(games, state.teamGame)}`;
+  $('teamPresetASelect').innerHTML = optionList(teams, state.teamPresetA);
+  $('teamPresetBSelect').innerHTML = optionList(teams, state.teamPresetB);
   $('textFilter').value = state.text;
 }
 
@@ -904,6 +1051,8 @@ function bindEvents() {
 
   $('seasonFilter').addEventListener('change', (event) => {
     state.season = event.target.value;
+    state.eloGameLeaderboardExpanded = false;
+    syncControls();
     render();
   });
   $('gameFilter').addEventListener('change', (event) => {
@@ -921,7 +1070,7 @@ function bindEvents() {
   $('playerASelect').addEventListener('change', (event) => {
     state.playerA = event.target.value;
     if (state.playerA === state.playerB) {
-      state.playerB = data.players.find((player) => player !== state.playerA) || state.playerB;
+      state.playerB = seasonPlayers().find((player) => player !== state.playerA) || state.playerB;
       syncControls();
     }
     render();
@@ -929,7 +1078,7 @@ function bindEvents() {
   $('playerBSelect').addEventListener('change', (event) => {
     state.playerB = event.target.value;
     if (state.playerA === state.playerB) {
-      state.playerA = data.players.find((player) => player !== state.playerB) || state.playerA;
+      state.playerA = seasonPlayers().find((player) => player !== state.playerB) || state.playerA;
       syncControls();
     }
     render();
@@ -943,6 +1092,10 @@ function bindEvents() {
     state.eloGameLeaderboardExpanded = false;
     render();
   });
+  $('gameAnalysisSortSelect').addEventListener('change', (event) => {
+    state.gameAnalysisSort = event.target.value;
+    render();
+  });
   $('eloLeaderboardToggle').addEventListener('click', () => {
     state.eloLeaderboardExpanded = !state.eloLeaderboardExpanded;
     render();
@@ -954,7 +1107,7 @@ function bindEvents() {
   $('virtualASelect').addEventListener('change', (event) => {
     state.virtualA = event.target.value;
     if (state.virtualA === state.virtualB) {
-      state.virtualB = data.players.find((player) => player !== state.virtualA) || state.virtualB;
+      state.virtualB = seasonPlayers().find((player) => player !== state.virtualA) || state.virtualB;
       syncControls();
     }
     render();
@@ -962,7 +1115,7 @@ function bindEvents() {
   $('virtualBSelect').addEventListener('change', (event) => {
     state.virtualB = event.target.value;
     if (state.virtualA === state.virtualB) {
-      state.virtualA = data.players.find((player) => player !== state.virtualB) || state.virtualA;
+      state.virtualA = seasonPlayers().find((player) => player !== state.virtualB) || state.virtualA;
       syncControls();
     }
     render();

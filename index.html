@@ -16,7 +16,7 @@
         <button class="tab is-active" type="button" data-tab="player">플레이어</button>
         <button class="tab" type="button" data-tab="headToHead">상대전적</button>
         <button class="tab" type="button" data-tab="elo">ELO</button>
-        <button class="tab" type="button" data-tab="gameElo">종목별 ELO</button>
+        <button class="tab" type="button" data-tab="gameElo">종목 분석</button>
         <button class="tab" type="button" data-tab="virtual">가상 대결</button>
         <button class="tab" type="button" data-tab="teamVirtual">팀 대결</button>
       </nav>
@@ -170,17 +170,27 @@
         </section>
       </section>
 
-      <section id="gameEloView" class="view" aria-label="종목별 ELO">
-        <div class="controls">
+      <section id="gameEloView" class="view" aria-label="종목 분석">
+        <div class="controls two-col">
           <label>
             종목
             <select id="eloGameSelect"></select>
           </label>
+          <label>
+            정렬
+            <select id="gameAnalysisSortSelect">
+              <option value="elo">ELO순</option>
+              <option value="wins">승리 순</option>
+              <option value="winRate">승률 순</option>
+            </select>
+          </label>
         </div>
+
+        <section class="summary-grid" id="gameAnalysisSummary"></section>
 
         <section class="table-section">
           <div class="section-title">
-            <h2>종목별 ELO 순위</h2>
+            <h2>종목 전적 및 보정치</h2>
             <span>
               <button class="mini-button" id="eloGameLeaderboardToggle" type="button"></button>
               <span id="eloGameLeaderboardCount"></span>
@@ -188,6 +198,16 @@
           </div>
           <div class="table-wrap">
             <table id="eloGameLeaderboardTable"></table>
+          </div>
+        </section>
+
+        <section class="table-section">
+          <div class="section-title">
+            <h2>전체 전적</h2>
+            <span id="gameAnalysisLogCount"></span>
+          </div>
+          <div class="table-wrap log-table">
+            <table id="gameAnalysisLogTable"></table>
           </div>
         </section>
       </section>
