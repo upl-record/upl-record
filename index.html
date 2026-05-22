@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UPL 전적 검색</title>
+    <link rel="stylesheet" href="assets/styles.css">
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <h1>UPL 전적 검색</h1>
+        <p id="dataMeta"></p>
+      </div>
+      <nav class="tabs" aria-label="검색 모드">
+        <button class="tab is-active" type="button" data-tab="player">플레이어</button>
+        <button class="tab" type="button" data-tab="headToHead">상대전적</button>
+        <button class="tab" type="button" data-tab="elo">ELO</button>
+        <button class="tab" type="button" data-tab="gameElo">종목별 ELO</button>
+        <button class="tab" type="button" data-tab="virtual">가상 대결</button>
+        <button class="tab" type="button" data-tab="teamVirtual">팀 대결</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="toolbar" aria-label="공통 필터">
+        <label>
+          시즌
+          <select id="seasonFilter"></select>
+        </label>
+        <label>
+          종목
+          <select id="gameFilter"></select>
+        </label>
+        <label class="search-box">
+          로그 검색
+          <input id="textFilter" type="search" placeholder="팀, 파일, 원문">
+        </label>
+      </section>
+
+      <section id="playerView" class="view is-active" aria-label="플레이어 전적">
+        <div class="controls">
+          <label>
+            플레이어
+            <select id="playerSelect"></select>
+          </label>
+        </div>
+
+        <section class="summary-grid" id="playerSummary"></section>
+
+        <div class="split">
+          <section class="table-section">
+            <div class="section-title">
+              <h2>종목별 전적</h2>
+              <span id="playerGameCount"></span>
+            </div>
+            <div class="table-wrap">
+              <table id="playerGameTable"></table>
+            </div>
+          </section>
+
+          <section class="table-section">
+            <div class="section-title">
+              <h2>상대별 전적</h2>
+              <span id="playerOpponentCount"></span>
+            </div>
+            <div class="table-wrap">
+              <table id="playerOpponentTable"></table>
+            </div>
+          </section>
+        </div>
+
+        <section class="table-section">
+          <div class="section-title">
+            <h2>경기 기록</h2>
+            <span id="playerLogCount"></span>
+          </div>
+          <div class="table-wrap log-table">
+            <table id="playerLogTable"></table>
+          </div>
+        </section>
+      </section>
+
+      <section id="headToHeadView" class="view" aria-label="상대전적">
+        <div class="controls two-col">
+          <label>
+            플레이어 A
+            <select id="playerASelect"></select>
+          </label>
+          <label>
+            플레이어 B
+            <select id="playerBSelect"></select>
+          </label>
+        </div>
+
+        <section class="summary-grid" id="h2hSummary"></section>
+
+        <section class="table-section">
+          <div class="section-title">
+            <h2>상대 종목별 전적</h2>
+            <span id="h2hGameCount"></span>
+          </div>
+          <div class="table-wrap">
+            <table id="h2hGameTable"></table>
+          </div>
+        </section>
+
+        <section class="table-section">
+          <div class="section-title">
+            <h2>상대 경기 기록</h2>
+            <span id="h2hLogCount"></span>
+          </div>
+          <div class="table-wrap log-table">
+            <table id="h2hLogTable"></table>
+          </div>
+        </section>
+      </section>
+
+      <section id="eloView" class="view" aria-label="ELO 레이팅">
+        <div class="controls">
+          <label>
+            플레이어
+            <select id="eloPlayerSelect"></select>
+          </label>
+        </div>
+
+        <section class="summary-grid" id="eloSummary"></section>
+
+        <section class="table-section">
+          <div class="section-title">
+            <h2>레이팅 그래프</h2>
+            <span id="eloChartCount"></span>
+          </div>
+          <div class="chart-wrap" id="eloChart"></div>
+        </section>
+
+        <div class="split">
+          <section class="table-section">
+            <div class="section-title">
+              <h2>ELO 순위</h2>
+              <span>
+                <button class="mini-button" id="eloLeaderboardToggle" type="button"></button>
+                <span id="eloLeaderboardCount"></span>
+              </span>
+            </div>
+            <div class="table-wrap">
+              <table id="eloLeaderboardTable"></table>
+            </div>
+          </section>
+
+          <section class="table-section">
+            <div class="section-title">
+              <h2>레이팅 흐름</h2>
+              <span id="eloTimelineCount"></span>
+            </div>
+            <div class="table-wrap log-table">
+              <table id="eloTimelineTable"></table>
+            </div>
+          </section>
+        </div>
+
+        <section class="table-section">
+          <div class="section-title">
+            <h2>경기별 ELO 기록</h2>
+            <span id="eloMatchCount"></span>
+          </div>
+          <div class="table-wrap log-table">
+            <table id="eloMatchTable"></table>
+          </div>
+        </section>
+      </section>
+
+      <section id="gameEloView" class="view" aria-label="종목별 ELO">
+        <div class="controls">
+          <label>
+            종목
+            <select id="eloGameSelect"></select>
+          </label>
+        </div>
+
+        <section class="table-section">
+          <div class="section-title">
+            <h2>종목별 ELO 순위</h2>
+            <span>
+              <button class="mini-button" id="eloGameLeaderboardToggle" type="button"></button>
+              <span id="eloGameLeaderboardCount"></span>
+            </span>
+          </div>
+          <div class="table-wrap">
+            <table id="eloGameLeaderboardTable"></table>
+          </div>
+        </section>
+      </section>
+
+      <section id="virtualView" class="view" aria-label="가상 대결">
+        <div class="controls three-col">
+          <label>
+            플레이어 A
+            <select id="virtualASelect"></select>
+          </label>
+          <label>
+            플레이어 B
+            <select id="virtualBSelect"></select>
+          </label>
+          <label>
+            종목 지수
+            <select id="virtualGameSelect"></select>
+          </label>
+        </div>
+
+        <section class="summary-grid" id="virtualSummary"></section>
+
+        <section class="table-section">
+          <div class="section-title">
+            <h2>예상 결과</h2>
+            <span id="virtualMatchupLabel"></span>
+          </div>
+          <div class="table-wrap">
+            <table id="virtualTable"></table>
+          </div>
+        </section>
+      </section>
+
+      <section id="teamVirtualView" class="view" aria-label="팀 가상대결">
+        <div class="controls three-col">
+          <label>
+            방식
+            <select id="teamSizeSelect">
+              <option value="5">5vs5</option>
+              <option value="3">3vs3</option>
+            </select>
+          </label>
+          <label>
+            종목 지수
+            <select id="teamGameSelect"></select>
+          </label>
+          <label>
+            반복
+            <input type="text" value="1000회" readonly>
+          </label>
+        </div>
+
+        <div class="controls two-col">
+          <label>
+            팀 A 프리셋
+            <select id="teamPresetASelect"></select>
+          </label>
+          <label>
+            팀 B 프리셋
+            <select id="teamPresetBSelect"></select>
+          </label>
+        </div>
+
+        <div class="team-builder-grid">
+          <section class="table-section">
+            <div class="section-title">
+              <h2>팀 A</h2>
+              <span id="teamALabel"></span>
+            </div>
+            <div class="member-grid" id="teamAMembers"></div>
+          </section>
+
+          <section class="table-section">
+            <div class="section-title">
+              <h2>팀 B</h2>
+              <span id="teamBLabel"></span>
+            </div>
+            <div class="member-grid" id="teamBMembers"></div>
+          </section>
+        </div>
+
+        <section class="summary-grid" id="teamVirtualSummary"></section>
+
+        <div class="split">
+          <section class="table-section">
+            <div class="section-title">
+              <h2>시뮬레이션 결과</h2>
+              <span id="teamVirtualResultCount"></span>
+            </div>
+            <div class="table-wrap">
+              <table id="teamVirtualResultTable"></table>
+            </div>
+          </section>
+
+          <section class="table-section">
+            <div class="section-title">
+              <h2>출전 명단</h2>
+              <span id="teamVirtualRosterCount"></span>
+            </div>
+            <div class="table-wrap">
+              <table id="teamVirtualRosterTable"></table>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script src="assets/upl-data.js"></script>
+    <script src="assets/app.js"></script>
+  </body>
+</html>
