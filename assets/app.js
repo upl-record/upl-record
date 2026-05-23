@@ -53,6 +53,7 @@ const logImageFileTypes = logFileTypes.filter((file) => file.type === 'image');
 const maxImageLogPages = 30;
 let logRequestToken = 0;
 let loggedMatchIds = new Set();
+let matchLogRows = new Map();
 
 function byKorean(a, b) {
   return String(a).localeCompare(String(b), 'ko');
@@ -151,8 +152,10 @@ async function loadMatchLogManifest() {
       ? manifest.logs
       : Object.entries(manifest.logs || {}).map(([matchId, row]) => ({ matchId, ...row }));
     loggedMatchIds = new Set(rows.map((row) => String(row.matchId ?? row.id)));
+    matchLogRows = new Map(rows.map((row) => [String(row.matchId ?? row.id), row]));
   } catch {
     loggedMatchIds = new Set();
+    matchLogRows = new Map();
   }
 }
 
@@ -220,7 +223,40 @@ async function fetchImageLog(candidate) {
   return response.ok ? candidate : null;
 }
 
+async function matchLogFromManifest(match) {
+  const row = matchLogRows.get(String(match.id));
+  if (!row?.files?.length) return null;
+
+  const textFile = row.files.find((file) => file.type === 'text');
+  if (textFile) {
+    try {
+      const response = await fetch(textFile.file, { cache: 'no-store' });
+      if (response.ok) {
+        return {
+          type: 'text',
+          url: textFile.file,
+          text: await response.text(),
+        };
+      }
+    } catch {
+      return null;
+    }
+  }
+
+  const images = row.files
+    .filter((file) => file.type === 'image')
+    .map((file) => ({
+      type: 'image',
+      url: file.file,
+      page: file.page,
+    }));
+  return images.length ? { type: 'images', images } : null;
+}
+
 async function findMatchLog(match) {
+  const manifestLog = await matchLogFromManifest(match);
+  if (manifestLog) return manifestLog;
+
   const singleCandidates = matchSingleLogCandidates(match);
   const textCandidate = singleCandidates.find((candidate) => candidate.type === 'text');
   try {
@@ -232,17 +268,20 @@ async function findMatchLog(match) {
 
   const imageLogs = [];
   for (const pageCandidates of matchImageSequenceCandidates(match)) {
+    let foundOnPage = false;
     for (const candidate of pageCandidates) {
       try {
         const found = await fetchImageLog(candidate);
         if (found) {
           imageLogs.push(found);
+          foundOnPage = true;
           break;
         }
       } catch {
         // Missing log files are expected while the archive is being filled.
       }
     }
+    if (!foundOnPage && imageLogs.length) break;
   }
   if (imageLogs.length) return { type: 'images', images: imageLogs };
 
