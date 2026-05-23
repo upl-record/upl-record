@@ -36,6 +36,17 @@
           로그 검색
           <input id="textFilter" type="search" placeholder="팀, 파일, 원문">
         </label>
+        <fieldset class="log-filter-group">
+          <legend>로그</legend>
+          <label class="checkbox-control">
+            <input id="showLoggedMatches" type="checkbox" checked>
+            있음
+          </label>
+          <label class="checkbox-control">
+            <input id="showUnloggedMatches" type="checkbox" checked>
+            없음
+          </label>
+        </fieldset>
       </section>
 
       <section id="playerView" class="view is-active" aria-label="플레이어 전적">
@@ -52,7 +63,10 @@
           <section class="table-section">
             <div class="section-title">
               <h2>종목별 전적</h2>
-              <span id="playerGameCount"></span>
+              <span>
+                <button class="mini-button" id="playerGameToggle" type="button"></button>
+                <span id="playerGameCount"></span>
+              </span>
             </div>
             <div class="table-wrap">
               <table id="playerGameTable"></table>
@@ -62,7 +76,10 @@
           <section class="table-section">
             <div class="section-title">
               <h2>상대별 전적</h2>
-              <span id="playerOpponentCount"></span>
+              <span>
+                <button class="mini-button" id="playerOpponentToggle" type="button"></button>
+                <span id="playerOpponentCount"></span>
+              </span>
             </div>
             <div class="table-wrap">
               <table id="playerOpponentTable"></table>

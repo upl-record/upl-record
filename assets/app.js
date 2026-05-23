@@ -11,12 +11,16 @@ const state = {
   season: 'all',
   game: 'all',
   text: '',
+  showLoggedMatches: true,
+  showUnloggedMatches: true,
   player: data.playerSummary[0]?.player || data.players[0],
   playerA: data.playerSummary[0]?.player || data.players[0],
   playerB: data.playerSummary[1]?.player || data.players[1],
   eloPlayer: data.elo?.leaderboard[0]?.player || data.playerSummary[0]?.player || data.players[0],
   eloGame: data.games[0] || 'all',
   gameAnalysisSort: 'elo',
+  playerGameExpanded: false,
+  playerOpponentExpanded: false,
   eloLeaderboardExpanded: false,
   eloGameLeaderboardExpanded: false,
   virtualA: data.elo?.leaderboard[0]?.player || data.players[0],
@@ -48,6 +52,7 @@ const logFileTypes = [
 const logImageFileTypes = logFileTypes.filter((file) => file.type === 'image');
 const maxImageLogPages = 30;
 let logRequestToken = 0;
+let loggedMatchIds = new Set();
 
 function byKorean(a, b) {
   return String(a).localeCompare(String(b), 'ko');
@@ -137,6 +142,20 @@ function escapeHtml(value) {
   }[char]));
 }
 
+async function loadMatchLogManifest() {
+  try {
+    const response = await fetch('match_logs/manifest.json', { cache: 'no-store' });
+    if (!response.ok) return;
+    const manifest = await response.json();
+    const rows = Array.isArray(manifest.logs)
+      ? manifest.logs
+      : Object.entries(manifest.logs || {}).map(([matchId, row]) => ({ matchId, ...row }));
+    loggedMatchIds = new Set(rows.map((row) => String(row.matchId ?? row.id)));
+  } catch {
+    loggedMatchIds = new Set();
+  }
+}
+
 function padMatchId(id) {
   return String(id).padStart(4, '0');
 }
@@ -167,7 +186,9 @@ function matchImageSequenceCandidates(match) {
 }
 
 function renderMatchLogButton(match) {
-  return `<button class="mini-button log-button" type="button" data-match-log="${match.id}">#${padMatchId(match.id)}</button>`;
+  const logged = hasMatchLog(match);
+  const label = logged ? '로그 있음' : '로그 없음';
+  return `<button class="mini-button log-button ${logged ? 'has-log' : 'no-log'}" type="button" data-match-log="${match.id}" title="${label}">#${padMatchId(match.id)}</button>`;
 }
 
 function matchLogMeta(match) {
@@ -279,6 +300,21 @@ async function openMatchLog(match) {
 function closeMatchLog() {
   logRequestToken += 1;
   setLogModalVisible(false);
+}
+
+function hasMatchLog(match) {
+  return loggedMatchIds.has(String(match.id));
+}
+
+function filterMatchesByLogState(matches) {
+  return matches.filter((match) => {
+    const logged = hasMatchLog(match);
+    return logged ? state.showLoggedMatches : state.showUnloggedMatches;
+  });
+}
+
+function countLabel(visible, total, unit) {
+  return visible === total ? `${total}${unit}` : `${visible}/${total}${unit}`;
 }
 
 function adjustmentSeasonShort(adjustment) {
@@ -641,7 +677,9 @@ function renderPlayerView() {
     };
   }).sort((a, b) => b.games - a.games || byKorean(a.game, b.game));
 
-  $('playerGameCount').textContent = `${gameRows.length}종`;
+  const playerGameDisplayRows = visibleRows(gameRows, state.playerGameExpanded);
+  updateToggleButton('playerGameToggle', state.playerGameExpanded, gameRows.length);
+  $('playerGameCount').textContent = countLabel(playerGameDisplayRows.length, gameRows.length, '종');
   renderTable($('playerGameTable'), [
     { label: '종목', key: 'game', width: '25%' },
     { label: '경기', key: 'games', className: 'num', width: '10%' },
@@ -650,7 +688,7 @@ function renderPlayerView() {
     { label: '승률', render: (row) => fmtPct(row.winRate), className: 'num', width: '12%' },
     { label: '보정', render: (row) => `<span class="${deltaClass(row.bonus)}">${fmtDelta(row.bonus)}</span>`, className: 'num', width: '13%' },
     { label: '보정 ELO', render: (row) => fmtRating(row.adjustedRating), className: 'num', width: '20%' },
-  ], gameRows);
+  ], playerGameDisplayRows);
 
   const opponentRows = [...groupBy(matches, (match) => opponentOf(match, player)).entries()].map(([opponent, rows]) => {
     const wins = rows.filter((match) => match.winner === player).length;
@@ -664,7 +702,9 @@ function renderPlayerView() {
     };
   }).sort((a, b) => b.games - a.games || byKorean(a.opponent, b.opponent));
 
-  $('playerOpponentCount').textContent = `${opponentRows.length}명`;
+  const playerOpponentDisplayRows = visibleRows(opponentRows, state.playerOpponentExpanded);
+  updateToggleButton('playerOpponentToggle', state.playerOpponentExpanded, opponentRows.length);
+  $('playerOpponentCount').textContent = countLabel(playerOpponentDisplayRows.length, opponentRows.length, '명');
   renderTable($('playerOpponentTable'), [
     { label: '상대', key: 'opponent', width: '30%' },
     { label: '경기', key: 'games', className: 'num', width: '14%' },
@@ -672,10 +712,11 @@ function renderPlayerView() {
     { label: '패', key: 'losses', className: 'num', width: '14%' },
     { label: '승률', render: (row) => fmtPct(row.winRate), className: 'num', width: '14%' },
     { label: '종목', key: 'gamesPlayed', className: 'num', width: '14%' },
-  ], opponentRows);
+  ], playerOpponentDisplayRows);
 
-  const logRows = matches.slice().sort((a, b) => a.id - b.id);
-  $('playerLogCount').textContent = `${logRows.length}경기`;
+  const allLogRows = matches.slice().sort((a, b) => a.id - b.id);
+  const logRows = filterMatchesByLogState(allLogRows);
+  $('playerLogCount').textContent = countLabel(logRows.length, allLogRows.length, '경기');
   renderTable($('playerLogTable'), [
     { label: '로그', render: (row) => renderMatchLogButton(row), width: '76px' },
     { label: '시즌', render: (row) => `${row.seasonShort} ${shortPhase(row)}`, width: '84px' },
@@ -731,8 +772,9 @@ function renderHeadToHeadView() {
     { label: `${a} 승률`, render: (row) => fmtPct(row.winRateA), className: 'num', width: '16%' },
   ], gameRows);
 
-  const logRows = matches.slice().sort((x, y) => x.id - y.id);
-  $('h2hLogCount').textContent = `${logRows.length}경기`;
+  const allLogRows = matches.slice().sort((x, y) => x.id - y.id);
+  const logRows = filterMatchesByLogState(allLogRows);
+  $('h2hLogCount').textContent = countLabel(logRows.length, allLogRows.length, '경기');
   renderTable($('h2hLogTable'), [
     { label: '로그', render: (row) => renderMatchLogButton(row), width: '76px' },
     { label: '시즌', render: (row) => `${row.seasonShort} ${shortPhase(row)}`, width: '84px' },
@@ -806,7 +848,7 @@ function renderEloView() {
     { label: '패', key: 'losses', className: 'num', width: '80px' },
   ], timelineRows);
 
-  const matchRows = filteredMatches()
+  const allMatchRows = filteredMatches()
     .filter((match) => match.player1 === selected.player || match.player2 === selected.player)
     .map((match) => {
       const rating = eloMatchById.get(match.id);
@@ -821,8 +863,9 @@ function renderEloView() {
       };
     })
     .sort((a, b) => a.id - b.id);
+  const matchRows = filterMatchesByLogState(allMatchRows);
 
-  $('eloMatchCount').textContent = `${matchRows.length}경기`;
+  $('eloMatchCount').textContent = countLabel(matchRows.length, allMatchRows.length, '경기');
   renderTable($('eloMatchTable'), [
     { label: '로그', render: (row) => renderMatchLogButton(row), width: '76px' },
     { label: '시즌', render: (row) => `${row.seasonShort} ${shortPhase(row)}`, width: '90px' },
@@ -917,7 +960,8 @@ function renderGameEloView() {
     { label: '종목 ELO', render: (row) => fmtRating(row.gameAdjustedRating), className: 'num', width: '110px' },
   ], gameLeaderboardDisplayRows);
 
-  $('gameAnalysisLogCount').textContent = `${gameMatches.length}경기`;
+  const gameLogRows = filterMatchesByLogState(gameMatches);
+  $('gameAnalysisLogCount').textContent = countLabel(gameLogRows.length, gameMatches.length, '경기');
   renderTable($('gameAnalysisLogTable'), [
     { label: '로그', render: (row) => renderMatchLogButton(row), width: '76px' },
     { label: '시즌', render: (row) => `${row.seasonShort} ${shortPhase(row)}`, width: '90px' },
@@ -926,7 +970,7 @@ function renderGameEloView() {
     { label: '패자', render: (row) => `<span class="loss">${escapeHtml(row.loser)}</span>`, width: '86px' },
     { label: '팀 매치', render: (row) => escapeHtml([row.team1, row.team2].filter(Boolean).join(' vs ')), width: '210px' },
     { label: '원문', key: 'rawLine', width: '420px' },
-  ], gameMatches);
+  ], gameLogRows);
 }
 
 function renderVirtualView() {
@@ -1194,6 +1238,8 @@ function syncControls() {
   $('teamPresetASelect').innerHTML = optionList(teams, state.teamPresetA);
   $('teamPresetBSelect').innerHTML = optionList(teams, state.teamPresetB);
   $('textFilter').value = state.text;
+  $('showLoggedMatches').checked = state.showLoggedMatches;
+  $('showUnloggedMatches').checked = state.showUnloggedMatches;
 }
 
 function bindEvents() {
@@ -1236,6 +1282,14 @@ function bindEvents() {
     state.text = event.target.value.trim();
     render();
   });
+  $('showLoggedMatches').addEventListener('change', (event) => {
+    state.showLoggedMatches = event.target.checked;
+    render();
+  });
+  $('showUnloggedMatches').addEventListener('change', (event) => {
+    state.showUnloggedMatches = event.target.checked;
+    render();
+  });
   $('playerSelect').addEventListener('change', (event) => {
     state.player = event.target.value;
     render();
@@ -1263,6 +1317,14 @@ function bindEvents() {
   $('eloGameSelect').addEventListener('change', (event) => {
     state.eloGame = event.target.value;
     state.eloGameLeaderboardExpanded = false;
+    render();
+  });
+  $('playerGameToggle').addEventListener('click', () => {
+    state.playerGameExpanded = !state.playerGameExpanded;
+    render();
+  });
+  $('playerOpponentToggle').addEventListener('click', () => {
+    state.playerOpponentExpanded = !state.playerOpponentExpanded;
     render();
   });
   $('gameAnalysisSortSelect').addEventListener('change', (event) => {
@@ -1329,8 +1391,9 @@ function bindEvents() {
   });
 }
 
-function init() {
+async function init() {
   $('dataMeta').textContent = `상세 ${data.meta.matches.toLocaleString('ko-KR')}경기 · 보정 ${data.meta.adjustedMatches.toLocaleString('ko-KR')}경기 · 참가자 ${data.meta.players}명 · 종목 ${data.meta.games}종 · ELO K=${data.meta.elo.k}`;
+  await loadMatchLogManifest();
   syncControls();
   bindEvents();
   render();

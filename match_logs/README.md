@@ -27,6 +27,7 @@ match_logs/S6/1790.txt
 - 이미지가 여러 장이면 `0001-01.jpg`, `0001-02.jpeg`, `0001-03.png`처럼 뒤에 순번을 붙입니다.
 - 여러 장 이미지 로그는 한 경기당 최대 30장까지 자동 조회합니다.
 - GitHub Pages에 반영하려면 `match_logs` 폴더 전체를 함께 업로드하면 됩니다.
+- 로그 유무 필터는 `manifest.json`을 기준으로 동작합니다. 로그 파일을 추가/삭제한 뒤에는 `build_match_log_manifest.mjs`를 실행해 manifest를 갱신해주세요.
 
 ## 텍스트 로그 양식
 
@@ -42,4 +43,12 @@ match_logs/S6/1790.txt
 match_logs/S3/0812-01.jpg
 match_logs/S3/0812-02.jpeg
 match_logs/S3/0812-03.png
+```
+
+## manifest 갱신
+
+로컬에서 로그 파일을 추가한 뒤 아래 명령을 실행하면 `match_logs/manifest.json`이 갱신됩니다.
+
+```powershell
+node build_match_log_manifest.mjs
 ```

@@ -1,0 +1,1249 @@
+{
+  "generatedAt": "2026-05-23T13:58:25.663Z",
+  "totalMatchesWithLogs": 83,
+  "logs": [
+    {
+      "matchId": 1328,
+      "season": "S5",
+      "files": [
+        {
+          "file": "match_logs/S5/1328.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1330,
+      "season": "S5",
+      "files": [
+        {
+          "file": "match_logs/S5/1330.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1331,
+      "season": "S5",
+      "files": [
+        {
+          "file": "match_logs/S5/1331.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1334,
+      "season": "S5",
+      "files": [
+        {
+          "file": "match_logs/S5/1334.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1394,
+      "season": "S5",
+      "files": [
+        {
+          "file": "match_logs/S5/1394.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1433,
+      "season": "S5",
+      "files": [
+        {
+          "file": "match_logs/S5/1433.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1480,
+      "season": "S5",
+      "files": [
+        {
+          "file": "match_logs/S5/1480.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1561,
+      "season": "S5",
+      "files": [
+        {
+          "file": "match_logs/S5/1561.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1607,
+      "season": "S5",
+      "files": [
+        {
+          "file": "match_logs/S5/1607-01.jpg",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S5/1607-02.jpg",
+          "type": "image",
+          "page": 2
+        },
+        {
+          "file": "match_logs/S5/1607-03.jpg",
+          "type": "image",
+          "page": 3
+        },
+        {
+          "file": "match_logs/S5/1607-04.jpg",
+          "type": "image",
+          "page": 4
+        }
+      ]
+    },
+    {
+      "matchId": 1636,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1636-01.jpg",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S6/1636-02.jpg",
+          "type": "image",
+          "page": 2
+        },
+        {
+          "file": "match_logs/S6/1636-03.jpg",
+          "type": "image",
+          "page": 3
+        }
+      ]
+    },
+    {
+      "matchId": 1637,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1637.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1638,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1638.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1639,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1639-01.png",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S6/1639-02.png",
+          "type": "image",
+          "page": 2
+        }
+      ]
+    },
+    {
+      "matchId": 1640,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1640.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1641,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1641.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1642,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1642.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1643,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1643-01.png",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S6/1643-02.png",
+          "type": "image",
+          "page": 2
+        }
+      ]
+    },
+    {
+      "matchId": 1652,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1652.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1653,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1653.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1654,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1654.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1655,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1655.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1656,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1656-01.png",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S6/1656-02.png",
+          "type": "image",
+          "page": 2
+        },
+        {
+          "file": "match_logs/S6/1656-03.png",
+          "type": "image",
+          "page": 3
+        },
+        {
+          "file": "match_logs/S6/1656-04.png",
+          "type": "image",
+          "page": 4
+        }
+      ]
+    },
+    {
+      "matchId": 1657,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1657.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1658,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1658-01.png",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S6/1658-02.png",
+          "type": "image",
+          "page": 2
+        }
+      ]
+    },
+    {
+      "matchId": 1662,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1662-01.jpg",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S6/1662-02.jpg",
+          "type": "image",
+          "page": 2
+        },
+        {
+          "file": "match_logs/S6/1662-03.jpg",
+          "type": "image",
+          "page": 3
+        },
+        {
+          "file": "match_logs/S6/1662-04.jpg",
+          "type": "image",
+          "page": 4
+        },
+        {
+          "file": "match_logs/S6/1662-05.jpg",
+          "type": "image",
+          "page": 5
+        },
+        {
+          "file": "match_logs/S6/1662-06.jpg",
+          "type": "image",
+          "page": 6
+        },
+        {
+          "file": "match_logs/S6/1662-07.jpg",
+          "type": "image",
+          "page": 7
+        }
+      ]
+    },
+    {
+      "matchId": 1668,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1668-01.jpg",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S6/1668-02.jpg",
+          "type": "image",
+          "page": 2
+        },
+        {
+          "file": "match_logs/S6/1668-03.jpg",
+          "type": "image",
+          "page": 3
+        },
+        {
+          "file": "match_logs/S6/1668-04.jpg",
+          "type": "image",
+          "page": 4
+        },
+        {
+          "file": "match_logs/S6/1668-05.jpg",
+          "type": "image",
+          "page": 5
+        },
+        {
+          "file": "match_logs/S6/1668-06.jpg",
+          "type": "image",
+          "page": 6
+        }
+      ]
+    },
+    {
+      "matchId": 1679,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1679-01.jpg",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S6/1679-02.jpg",
+          "type": "image",
+          "page": 2
+        },
+        {
+          "file": "match_logs/S6/1679-03.jpg",
+          "type": "image",
+          "page": 3
+        },
+        {
+          "file": "match_logs/S6/1679-04.jpg",
+          "type": "image",
+          "page": 4
+        }
+      ]
+    },
+    {
+      "matchId": 1688,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1688-01.jpg",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S6/1688-02.jpg",
+          "type": "image",
+          "page": 2
+        },
+        {
+          "file": "match_logs/S6/1688-03.jpg",
+          "type": "image",
+          "page": 3
+        },
+        {
+          "file": "match_logs/S6/1688-04.jpg",
+          "type": "image",
+          "page": 4
+        },
+        {
+          "file": "match_logs/S6/1688-05.jpg",
+          "type": "image",
+          "page": 5
+        },
+        {
+          "file": "match_logs/S6/1688-06.jpg",
+          "type": "image",
+          "page": 6
+        },
+        {
+          "file": "match_logs/S6/1688-07.jpg",
+          "type": "image",
+          "page": 7
+        },
+        {
+          "file": "match_logs/S6/1688-08.jpg",
+          "type": "image",
+          "page": 8
+        }
+      ]
+    },
+    {
+      "matchId": 1689,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1689-01.jpg",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S6/1689-02.jpg",
+          "type": "image",
+          "page": 2
+        },
+        {
+          "file": "match_logs/S6/1689-03.jpg",
+          "type": "image",
+          "page": 3
+        },
+        {
+          "file": "match_logs/S6/1689-04.jpg",
+          "type": "image",
+          "page": 4
+        },
+        {
+          "file": "match_logs/S6/1689-05.jpg",
+          "type": "image",
+          "page": 5
+        }
+      ]
+    },
+    {
+      "matchId": 1690,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1690.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1691,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1691.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1692,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1692-01.jpg",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S6/1692-02.jpg",
+          "type": "image",
+          "page": 2
+        },
+        {
+          "file": "match_logs/S6/1692-03.jpg",
+          "type": "image",
+          "page": 3
+        },
+        {
+          "file": "match_logs/S6/1692-04.jpg",
+          "type": "image",
+          "page": 4
+        },
+        {
+          "file": "match_logs/S6/1692-05.png",
+          "type": "image",
+          "page": 5
+        }
+      ]
+    },
+    {
+      "matchId": 1693,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1693.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1694,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1694.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1695,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1695.jpg",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1696,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1696-01.jpg",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S6/1696-02.jpg",
+          "type": "image",
+          "page": 2
+        },
+        {
+          "file": "match_logs/S6/1696-03.jpg",
+          "type": "image",
+          "page": 3
+        },
+        {
+          "file": "match_logs/S6/1696-04.jpg",
+          "type": "image",
+          "page": 4
+        },
+        {
+          "file": "match_logs/S6/1696-05.jpg",
+          "type": "image",
+          "page": 5
+        }
+      ]
+    },
+    {
+      "matchId": 1705,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1705.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1706,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1706.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1707,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1707-01.png",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S6/1707-02.png",
+          "type": "image",
+          "page": 2
+        }
+      ]
+    },
+    {
+      "matchId": 1708,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1708-01.png",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S6/1708-02.png",
+          "type": "image",
+          "page": 2
+        },
+        {
+          "file": "match_logs/S6/1708-03.png",
+          "type": "image",
+          "page": 3
+        },
+        {
+          "file": "match_logs/S6/1708-04.png",
+          "type": "image",
+          "page": 4
+        }
+      ]
+    },
+    {
+      "matchId": 1709,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1709.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1710,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1710.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1711,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1711.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1712,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1712.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1713,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1713.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1720,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1720.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1731,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1731.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1732,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1732.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1737,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1737.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1738,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1738.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1739,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1739.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1740,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1740.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1741,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1741.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1742,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1742.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1743,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1743-01.png",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S6/1743-02.png",
+          "type": "image",
+          "page": 2
+        }
+      ]
+    },
+    {
+      "matchId": 1744,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1744-01.png",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S6/1744-02.png",
+          "type": "image",
+          "page": 2
+        }
+      ]
+    },
+    {
+      "matchId": 1745,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1745.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1746,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1746.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1747,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1747.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1748,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1748.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1749,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1749.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1750,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1750.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1751,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1751.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1752,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1752.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1753,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1753.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1754,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1754.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1760,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1760.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1761,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1761.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1762,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1762.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1763,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1763.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1764,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1764.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1765,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1765.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1771,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1771-01.jpg",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S6/1771-02.jpg",
+          "type": "image",
+          "page": 2
+        },
+        {
+          "file": "match_logs/S6/1771-03.jpg",
+          "type": "image",
+          "page": 3
+        },
+        {
+          "file": "match_logs/S6/1771-04.jpg",
+          "type": "image",
+          "page": 4
+        },
+        {
+          "file": "match_logs/S6/1771-05.jpg",
+          "type": "image",
+          "page": 5
+        },
+        {
+          "file": "match_logs/S6/1771-06.jpg",
+          "type": "image",
+          "page": 6
+        },
+        {
+          "file": "match_logs/S6/1771-07.jpg",
+          "type": "image",
+          "page": 7
+        },
+        {
+          "file": "match_logs/S6/1771-08.jpg",
+          "type": "image",
+          "page": 8
+        },
+        {
+          "file": "match_logs/S6/1771-09.jpg",
+          "type": "image",
+          "page": 9
+        },
+        {
+          "file": "match_logs/S6/1771-10.jpg",
+          "type": "image",
+          "page": 10
+        },
+        {
+          "file": "match_logs/S6/1771-11.jpg",
+          "type": "image",
+          "page": 11
+        },
+        {
+          "file": "match_logs/S6/1771-12.jpg",
+          "type": "image",
+          "page": 12
+        },
+        {
+          "file": "match_logs/S6/1771-13.jpg",
+          "type": "image",
+          "page": 13
+        },
+        {
+          "file": "match_logs/S6/1771-14.jpg",
+          "type": "image",
+          "page": 14
+        },
+        {
+          "file": "match_logs/S6/1771-15.jpg",
+          "type": "image",
+          "page": 15
+        }
+      ]
+    },
+    {
+      "matchId": 1777,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1777.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1782,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1782.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1783,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1783.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1784,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1784-01.png",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S6/1784-02.png",
+          "type": "image",
+          "page": 2
+        }
+      ]
+    },
+    {
+      "matchId": 1785,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1785.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1786,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1786.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1787,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1787.txt",
+          "type": "text",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1788,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1788.png",
+          "type": "image",
+          "page": null
+        }
+      ]
+    },
+    {
+      "matchId": 1789,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1789-01.png",
+          "type": "image",
+          "page": 1
+        },
+        {
+          "file": "match_logs/S6/1789-02.png",
+          "type": "image",
+          "page": 2
+        }
+      ]
+    },
+    {
+      "matchId": 1790,
+      "season": "S6",
+      "files": [
+        {
+          "file": "match_logs/S6/1790.jpg",
+          "type": "image",
+          "page": null
+        }
+      ]
+    }
+  ]
+}

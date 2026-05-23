@@ -108,7 +108,7 @@ main {
 }
 
 .toolbar {
-  grid-template-columns: minmax(150px, 210px) minmax(180px, 250px) minmax(240px, 1fr);
+  grid-template-columns: minmax(150px, 210px) minmax(180px, 250px) minmax(240px, 1fr) minmax(170px, 220px);
   align-items: end;
 }
 
@@ -129,6 +129,39 @@ label {
   gap: 6px;
   color: var(--muted);
   font-weight: 700;
+}
+
+.log-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 38px;
+  margin: 0;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  padding: 6px 10px;
+}
+
+.log-filter-group legend {
+  padding: 0 4px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.checkbox-control {
+  display: inline-flex;
+  grid-template-columns: none;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.checkbox-control input {
+  width: 16px;
+  min-height: 16px;
+  margin: 0;
+  padding: 0;
 }
 
 select,
@@ -164,8 +197,18 @@ input {
   padding-right: 8px;
 }
 
+.log-button.has-log {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.log-button.no-log {
+  color: var(--muted);
+}
+
 select:focus,
 input:focus,
+.checkbox-control input:focus-visible,
 .mini-button:focus-visible,
 .tab:focus-visible {
   outline: 2px solid var(--blue);
