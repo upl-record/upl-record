@@ -1,0 +1,17 @@
+   라블  레이지
+1R 11 vs 10
+2R 10 vs 0
+3R 0 vs 9 
+4R 20 vs 10
+5R 9 vs 9
+6R 10 vs 0
+7R 0 vs 9
+8R 0 vs 20
+9R 0 vs 13
+10R 15 vs 10
+11R 12 vs 16
+12R 9 vs 0
+13R 21 vs 13
+14R 3 vs 9
+15R 30 vs 12
+16R 5 vs 1
