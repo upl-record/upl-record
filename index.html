@@ -315,6 +315,18 @@
       </section>
     </main>
 
+    <div class="modal-backdrop" id="matchLogBackdrop" hidden></div>
+    <section class="log-modal" id="matchLogModal" role="dialog" aria-modal="true" aria-labelledby="matchLogTitle" hidden>
+      <header class="log-modal-header">
+        <div>
+          <h2 id="matchLogTitle">경기 로그</h2>
+          <p id="matchLogMeta"></p>
+        </div>
+        <button class="mini-button" id="matchLogClose" type="button">닫기</button>
+      </header>
+      <div class="log-modal-body" id="matchLogBody"></div>
+    </section>
+
     <script src="assets/upl-data.js"></script>
     <script src="assets/app.js"></script>
   </body>

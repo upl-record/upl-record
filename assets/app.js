@@ -1,5 +1,6 @@
 const data = window.UPL_DATA;
 const eloMatchById = new Map((data.elo?.matches || []).map((row) => [row.matchId, row]));
+const matchById = new Map(data.matches.map((match) => [String(match.id), match]));
 const teamRosters = buildTeamRosters();
 const teamNames = teamRosters.map((row) => row.key);
 const defaultTeamA = teamRosters.find((row) => row.players.length >= 5)?.key || teamNames[0] || '';
@@ -35,6 +36,18 @@ const fmtPct = (value) => `${(value * 100).toFixed(1)}%`;
 const fmtRating = (value) => Number(value || 0).toLocaleString('ko-KR', { maximumFractionDigits: 1 });
 const fmtDelta = (value) => `${value > 0 ? '+' : ''}${fmtRating(value)}`;
 const shortPhase = (match) => (match.week ? `W${match.week}` : match.phase);
+const logFileTypes = [
+  { ext: 'txt', type: 'text' },
+  { ext: 'jpg', type: 'image' },
+  { ext: 'jpeg', type: 'image' },
+  { ext: 'png', type: 'image' },
+  { ext: 'JPG', type: 'image' },
+  { ext: 'JPEG', type: 'image' },
+  { ext: 'PNG', type: 'image' },
+];
+const logImageFileTypes = logFileTypes.filter((file) => file.type === 'image');
+const maxImageLogPages = 30;
+let logRequestToken = 0;
 
 function byKorean(a, b) {
   return String(a).localeCompare(String(b), 'ko');
@@ -122,6 +135,150 @@ function escapeHtml(value) {
     '"': '&quot;',
     "'": '&#039;',
   }[char]));
+}
+
+function padMatchId(id) {
+  return String(id).padStart(4, '0');
+}
+
+function matchLogStem(match) {
+  return `match_logs/${match.seasonShort}/${padMatchId(match.id)}`;
+}
+
+function matchSingleLogCandidates(match) {
+  const stem = matchLogStem(match);
+  return logFileTypes.map((file) => ({
+    ...file,
+    url: `${stem}.${file.ext}`,
+  }));
+}
+
+function matchImageSequenceCandidates(match) {
+  const stem = matchLogStem(match);
+  return Array.from({ length: maxImageLogPages }, (_, index) => {
+    const page = index + 1;
+    const pageNo = String(page).padStart(2, '0');
+    return logImageFileTypes.map((file) => ({
+      ...file,
+      page,
+      url: `${stem}-${pageNo}.${file.ext}`,
+    }));
+  });
+}
+
+function renderMatchLogButton(match) {
+  return `<button class="mini-button log-button" type="button" data-match-log="${match.id}">#${padMatchId(match.id)}</button>`;
+}
+
+function matchLogMeta(match) {
+  return [
+    `${match.seasonShort} ${shortPhase(match)}`,
+    match.game,
+    `${match.player1} vs ${match.player2}`,
+    `${match.winner} 승`,
+  ].filter(Boolean).join(' · ');
+}
+
+function setLogModalVisible(visible) {
+  $('matchLogBackdrop').hidden = !visible;
+  $('matchLogModal').hidden = !visible;
+  if (document.body) document.body.classList.toggle('modal-open', visible);
+}
+
+async function fetchTextLog(candidate) {
+  const response = await fetch(candidate.url, { cache: 'no-store' });
+  if (!response.ok) return null;
+  return {
+    ...candidate,
+    text: await response.text(),
+  };
+}
+
+async function fetchImageLog(candidate) {
+  const response = await fetch(candidate.url, { method: 'HEAD', cache: 'no-store' });
+  return response.ok ? candidate : null;
+}
+
+async function findMatchLog(match) {
+  const singleCandidates = matchSingleLogCandidates(match);
+  const textCandidate = singleCandidates.find((candidate) => candidate.type === 'text');
+  try {
+    const textLog = textCandidate ? await fetchTextLog(textCandidate) : null;
+    if (textLog) return textLog;
+  } catch {
+    // Missing log files are expected while the archive is being filled.
+  }
+
+  const imageLogs = [];
+  for (const pageCandidates of matchImageSequenceCandidates(match)) {
+    for (const candidate of pageCandidates) {
+      try {
+        const found = await fetchImageLog(candidate);
+        if (found) {
+          imageLogs.push(found);
+          break;
+        }
+      } catch {
+        // Missing log files are expected while the archive is being filled.
+      }
+    }
+  }
+  if (imageLogs.length) return { type: 'images', images: imageLogs };
+
+  for (const candidate of singleCandidates.filter((item) => item.type === 'image')) {
+    try {
+      const found = await fetchImageLog(candidate);
+      if (found) return { type: 'images', images: [found] };
+    } catch {
+      // Missing log files are expected while the archive is being filled.
+    }
+  }
+
+  return null;
+}
+
+async function openMatchLog(match) {
+  const token = ++logRequestToken;
+  $('matchLogTitle').textContent = `경기 로그 #${padMatchId(match.id)}`;
+  $('matchLogMeta').textContent = matchLogMeta(match);
+  $('matchLogBody').innerHTML = '<div class="log-status">로그를 확인하고 있습니다.</div>';
+  setLogModalVisible(true);
+
+  const log = await findMatchLog(match);
+  if (token !== logRequestToken) return;
+
+  if (!log) {
+    $('matchLogBody').innerHTML = '<div class="log-status">등록된 로그가 없습니다.</div>';
+    return;
+  }
+
+  if (log.type === 'text') {
+    const sourceLink = `<a class="mini-button log-source-link" href="${escapeHtml(log.url)}" target="_blank" rel="noopener">원본 열기</a>`;
+    $('matchLogBody').innerHTML = `
+      <div class="log-actions">${sourceLink}</div>
+      <pre class="text-log">${escapeHtml(log.text)}</pre>
+    `;
+    return;
+  }
+
+  $('matchLogBody').innerHTML = `
+    <div class="log-actions">
+      ${log.images.map((image, index) => `<a class="mini-button log-source-link" href="${escapeHtml(image.url)}" target="_blank" rel="noopener">원본 ${index + 1}</a>`).join('')}
+    </div>
+    <div class="image-log-list">
+      ${log.images.map((image, index) => `
+        <figure class="image-log-card">
+          <img class="image-log" src="${escapeHtml(image.url)}" alt="${escapeHtml(`경기 로그 #${padMatchId(match.id)} ${index + 1}`)}">
+          <figcaption class="image-log-caption">${index + 1} / ${log.images.length}</figcaption>
+        </figure>
+      `).join('')}
+    </div>
+  `;
+}
+
+function closeMatchLog() {
+  logRequestToken += 1;
+  setLogModalVisible(false);
 }
 
 function adjustmentSeasonShort(adjustment) {
@@ -520,6 +677,7 @@ function renderPlayerView() {
   const logRows = matches.slice().sort((a, b) => a.id - b.id);
   $('playerLogCount').textContent = `${logRows.length}경기`;
   renderTable($('playerLogTable'), [
+    { label: '로그', render: (row) => renderMatchLogButton(row), width: '76px' },
     { label: '시즌', render: (row) => `${row.seasonShort} ${shortPhase(row)}`, width: '84px' },
     { label: '종목', key: 'game', width: '130px' },
     { label: '상대', render: (row) => escapeHtml(opponentOf(row, player)), width: '82px' },
@@ -576,6 +734,7 @@ function renderHeadToHeadView() {
   const logRows = matches.slice().sort((x, y) => x.id - y.id);
   $('h2hLogCount').textContent = `${logRows.length}경기`;
   renderTable($('h2hLogTable'), [
+    { label: '로그', render: (row) => renderMatchLogButton(row), width: '76px' },
     { label: '시즌', render: (row) => `${row.seasonShort} ${shortPhase(row)}`, width: '84px' },
     { label: '종목', key: 'game', width: '130px' },
     { label: '대진', render: (row) => escapeHtml(`${row.player1} vs ${row.player2}`), width: '150px' },
@@ -665,6 +824,7 @@ function renderEloView() {
 
   $('eloMatchCount').textContent = `${matchRows.length}경기`;
   renderTable($('eloMatchTable'), [
+    { label: '로그', render: (row) => renderMatchLogButton(row), width: '76px' },
     { label: '시즌', render: (row) => `${row.seasonShort} ${shortPhase(row)}`, width: '90px' },
     { label: '종목', key: 'game', width: '140px' },
     { label: '상대', key: 'opponent', width: '90px' },
@@ -759,6 +919,7 @@ function renderGameEloView() {
 
   $('gameAnalysisLogCount').textContent = `${gameMatches.length}경기`;
   renderTable($('gameAnalysisLogTable'), [
+    { label: '로그', render: (row) => renderMatchLogButton(row), width: '76px' },
     { label: '시즌', render: (row) => `${row.seasonShort} ${shortPhase(row)}`, width: '90px' },
     { label: '대진', render: (row) => escapeHtml(`${row.player1} vs ${row.player2}`), width: '150px' },
     { label: '승자', render: (row) => `<span class="winner">${escapeHtml(row.winner)}</span>`, width: '86px' },
@@ -1036,6 +1197,18 @@ function syncControls() {
 }
 
 function bindEvents() {
+  $('matchLogClose').addEventListener('click', closeMatchLog);
+  $('matchLogBackdrop').addEventListener('click', closeMatchLog);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !$('matchLogModal').hidden) closeMatchLog();
+  });
+  document.addEventListener('click', (event) => {
+    const button = event.target.closest?.('button[data-match-log]');
+    if (!button) return;
+    const match = matchById.get(button.dataset.matchLog);
+    if (match) openMatchLog(match);
+  });
+
   document.querySelectorAll('.tab').forEach((tab) => {
     tab.addEventListener('click', () => {
       state.tab = tab.dataset.tab;

@@ -32,6 +32,10 @@ body {
   margin: 0;
 }
 
+body.modal-open {
+  overflow: hidden;
+}
+
 .app-header {
   display: flex;
   align-items: end;
@@ -152,6 +156,12 @@ input {
 
 .mini-button[hidden] {
   display: none;
+}
+
+.log-button {
+  min-width: 62px;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
 select:focus,
@@ -405,6 +415,114 @@ tbody tr:hover {
 .rank {
   color: var(--blue);
   font-weight: 800;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: rgb(30 42 37 / 0.42);
+}
+
+.log-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 11;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: min(960px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  box-shadow: 0 22px 70px rgb(30 42 37 / 0.32);
+}
+
+.modal-backdrop[hidden],
+.log-modal[hidden] {
+  display: none;
+}
+
+.log-modal-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+#matchLogMeta {
+  margin-top: 5px;
+  color: var(--muted);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.log-modal-body {
+  min-height: 180px;
+  overflow: auto;
+  padding: 16px 18px 18px;
+}
+
+.log-status {
+  padding: 18px;
+  color: var(--muted);
+  font-weight: 800;
+  text-align: center;
+}
+
+.log-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.log-source-link {
+  display: inline-grid;
+  align-items: center;
+  min-height: 30px;
+  text-decoration: none;
+}
+
+.text-log {
+  margin: 0;
+  min-height: 220px;
+  border: 1px solid var(--line);
+  background: #fbfcfa;
+  padding: 14px;
+  color: var(--ink);
+  font: 14px/1.6 Consolas, "Noto Sans KR", monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.image-log {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  border: 1px solid var(--line);
+}
+
+.image-log-list {
+  display: grid;
+  gap: 14px;
+}
+
+.image-log-card {
+  margin: 0;
+}
+
+.image-log-caption {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
 }
 
 @media (max-width: 980px) {
